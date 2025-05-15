@@ -5,10 +5,12 @@ import GamePlayer from './Player.jsx'
 import './index.css'
 
 function GameArea() {
+
   return (
     <div className="flex items-center justify-center h-screen w-screen">
-      <div className="relative w-200 h-200 border-2 border-solid border-black text-white">
-        <GamePlayer />
+      <div className="bg-gray-300 relative w-200 h-200 border-3 border-solid border-black text-white">
+        <GamePlayer user={"Player"}/>
+        
       </div>
     </div>
   );
