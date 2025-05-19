@@ -3,21 +3,68 @@ import { useState, useEffect } from 'react'
 function GamePlayer({ user }) {
     const [player, setPlayer] = useState({
         name: user,
-        hp: 100,
-        attack: 10,
+        mining: null,
+        smelting: null,
+        rocks: 0,
+        bars: 0,
         x: 50,
         y: 90,
     });
 
+    function checkMining() {
+        if (player.x < 16) {
+            setPlayer(prev => ({ ...prev, mining: true }));
+        } else {
+            setPlayer(prev => ({ ...prev, mining: false }));
+        }
+    }
+
+    function checkSmelting() {
+        if (player.x >= 60 && player.x <= 75) {
+            setPlayer(prev => ({ ...prev, smelting: true }));
+        } else {
+            setPlayer(prev => ({ ...prev, smelting: false }));
+        }
+    }
+
+    useEffect(() => {
+        if (player.mining) {
+            const interval = setInterval(() => {
+            setPlayer(prev => ({ ...prev, rocks: prev.rocks + 1 }));
+            }, 800); // every 0.8 second
+
+            return () => clearInterval(interval); // cleanup
+        }
+    }, [player.mining]);
+
+    useEffect(() => {
+        if (player.smelting && player.rocks >= 3) {
+            const interval = setInterval(() => {
+            setPlayer(prev => {
+                if (prev.rocks <= 3) return prev;
+                    return { ...prev, rocks: prev.rocks - 3, bars: prev.bars + 1 };
+                });
+            }, 2000); // every 2 second
+
+            return () => clearInterval(interval); // cleanup
+        }
+    }, [player.smelting]);
+
+
+    useEffect(() => {
+        checkMining();
+        checkSmelting();
+    }, [player.x]);
+
     function jump() {
         setPlayer(prev => {
             if (prev.y < 90) return prev; 
-            let i = -1;
+            let i = -0.5;
             const gravity = setInterval(() => {
                 movePlayer(0, i);
                 i += 0.05;
                 setPlayer(p => {
-                    if (p.y === 90) clearInterval(gravity);
+                    if (p.y == 90 || p.y <= 6) clearInterval(gravity);
                         return p;
                     });
             }, 15);
@@ -83,7 +130,8 @@ function GamePlayer({ user }) {
         <div>
             <div>
                 <div className="absolute rounded-lg w-10 h-20 border-2 border-dotted border-black text-white"
-                    style={{ top: `${player.y}%`, left: `${player.x}%`, }}></div>
+                    style={{ top: `${player.y}%`, left: `${player.x}%`, }}>
+                </div>
             </div>
 
             <div>
@@ -93,9 +141,20 @@ function GamePlayer({ user }) {
                     </div>
             </div>
 
-            <div>
-                <div className="absolute rounded-lg w-30 h-10 border-2 border-dotted border-black text-white"
-                    style={{ top: `${player.y - 9}%`, left: `${player.x - 5.5}%`, }}></div>
+
+            <div className="absolute text-sm w-20 h-8 text-black text-center"
+                style={{ top: `${player.y - 5}%`, left: `${player.x - 2.5}%`, }}>
+                X: {player.x}%
+            </div>
+
+            <div className="absolute text-sm w-20 h-8 text-black text-center"
+                style={{ top: `${player.y - 7}%`, left: `${player.x - 2.5}%`, }}>
+                Rocks: {player.rocks}
+            </div>
+
+            <div className="absolute text-sm w-20 h-8 text-black text-center"
+                style={{ top: `${player.y - 9}%`, left: `${player.x - 2.5}%`, }}>
+                Bars: {player.bars}
             </div>
         </div>
     );
