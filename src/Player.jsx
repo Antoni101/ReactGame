@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 
-function GamePlayer({ user }) {
+function GamePlayer() {
     const [player, setPlayer] = useState({
-        name: user,
         mining: null,
         smelting: null,
+        money: 0,
         rocks: 0,
         bars: 0,
         x: 50,
@@ -134,26 +134,18 @@ function GamePlayer({ user }) {
                 </div>
             </div>
 
-            <div>
-                <div className="absolute text-sm w-20 h-8 text-black text-center"
-                    style={{ top: `${player.y - 3.2}%`, left: `${player.x - 2.5}%`, }}>
-                        {player.name}
-                    </div>
+            <div className="absolute text-sm w-30 h-8 text-black text-center"
+                style={{ top: `${player.y - 3}%`, left: `${player.x - 4.5}%`, }}>
+                X: {player.x}% Y: {player.y.toFixed(0)}%
             </div>
-
 
             <div className="absolute text-sm w-20 h-8 text-black text-center"
                 style={{ top: `${player.y - 5}%`, left: `${player.x - 2.5}%`, }}>
-                X: {player.x}%
-            </div>
-
-            <div className="absolute text-sm w-20 h-8 text-black text-center"
-                style={{ top: `${player.y - 7}%`, left: `${player.x - 2.5}%`, }}>
                 Rocks: {player.rocks}
             </div>
 
             <div className="absolute text-sm w-20 h-8 text-black text-center"
-                style={{ top: `${player.y - 9}%`, left: `${player.x - 2.5}%`, }}>
+                style={{ top: `${player.y - 7}%`, left: `${player.x - 2.5}%`, }}>
                 Bars: {player.bars}
             </div>
         </div>
