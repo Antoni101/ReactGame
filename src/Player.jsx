@@ -4,23 +4,34 @@ function GamePlayer() {
     const [player, setPlayer] = useState({
         mining: null,
         smelting: null,
+        selling: null,
+        sellValue: 5,
+        mineSpeed: 1000,
         money: 0,
         rocks: 0,
         bars: 0,
-        x: 50,
+        x: 30,
         y: 90,
     });
 
     function checkMining() {
-        if (player.x < 16) {
+        if (player.x <= 13) {
             setPlayer(prev => ({ ...prev, mining: true }));
         } else {
             setPlayer(prev => ({ ...prev, mining: false }));
         }
     }
 
+    function checkSelling() {
+        if (player.x >= 82) {
+            setPlayer(prev => ({ ...prev, selling: true }));
+        } else {
+            setPlayer(prev => ({ ...prev, selling: false }));
+        }
+    }
+
     function checkSmelting() {
-        if (player.x >= 60 && player.x <= 75) {
+        if (player.x >= 42 && player.x <= 57) {
             setPlayer(prev => ({ ...prev, smelting: true }));
         } else {
             setPlayer(prev => ({ ...prev, smelting: false }));
@@ -31,7 +42,7 @@ function GamePlayer() {
         if (player.mining) {
             const interval = setInterval(() => {
             setPlayer(prev => ({ ...prev, rocks: prev.rocks + 1 }));
-            }, 800); // every 0.8 second
+            }, player.mineSpeed); // every second
 
             return () => clearInterval(interval); // cleanup
         }
@@ -41,7 +52,7 @@ function GamePlayer() {
         if (player.smelting && player.rocks >= 3) {
             const interval = setInterval(() => {
             setPlayer(prev => {
-                if (prev.rocks <= 3) return prev;
+                if (prev.rocks < 3) return prev;
                     return { ...prev, rocks: prev.rocks - 3, bars: prev.bars + 1 };
                 });
             }, 2000); // every 2 second
@@ -50,10 +61,28 @@ function GamePlayer() {
         }
     }, [player.smelting]);
 
+    useEffect(() => {
+        if (player.selling && player.bars > 0) {
+            const interval = setInterval(() => {
+            setPlayer(prev => {
+                if (prev.bars <= 0) return prev;
+                    return {
+                        ...prev, 
+                        bars: prev.bars - 1,
+                        money: prev.money + prev.sellValue 
+                    };
+                });
+            }, 500); // every second
+
+            return () => clearInterval(interval); // cleanup
+        }
+    }, [player.selling]);
+
 
     useEffect(() => {
         checkMining();
         checkSmelting();
+        checkSelling();
     }, [player.x]);
 
     function jump() {
@@ -75,7 +104,6 @@ function GamePlayer() {
 
     let aInterval = null;
     let dInterval = null;
-    let sInterval = null;
     useEffect(() => {
         function handleKeyDown(e) {
             if (e.key === 'a' && !aInterval) {
@@ -88,11 +116,6 @@ function GamePlayer() {
                     movePlayer(1, 0); // right
                 }, 20);
             }
-            if (e.key === 's' && !sInterval) {
-                sInterval = setInterval(() => {
-                    movePlayer(0, 1); // down
-                }, 20);
-            }
             if (e.key === 'w') jump();
         }
         function handleKeyUp(e) {
@@ -103,10 +126,6 @@ function GamePlayer() {
             if (e.key === 'd' && dInterval) {
                 clearInterval(dInterval);
                 dInterval = null;
-            }
-            if (e.key === 's' && sInterval) {
-                clearInterval(sInterval);
-                sInterval = null;
             }
         }
 
@@ -147,6 +166,11 @@ function GamePlayer() {
             <div className="absolute text-sm w-20 h-8 text-black text-center"
                 style={{ top: `${player.y - 7}%`, left: `${player.x - 2.5}%`, }}>
                 Bars: {player.bars}
+            </div>
+
+            <div className="absolute text-sm w-20 h-8 text-black text-center"
+                style={{ top: `${player.y - 9}%`, left: `${player.x - 2.5}%`, }}>
+                Money: ${player.money}
             </div>
         </div>
     );
