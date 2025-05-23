@@ -1,10 +1,11 @@
-function Sell() {
+export const sellValue = 15;
 
-    return (
-        <div className="absolute w-20 h-20 border-2 border-white"
-        style={{ top: `${90}%`, left: `${87}%`,}}>
-        </div>
-    )
+function Sell() {
+  return (
+    <div className="absolute w-20 h-20 border-4 bg-yellow-200 border-yellow-300"
+      style={{ top: `${90}%`, left: `${87}%`, }}>
+    </div>
+  );
 }
 
-export default Sell
+export default Sell;
